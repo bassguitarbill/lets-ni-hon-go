@@ -152,7 +152,11 @@ impl Verb {
 		match &(self.dictionary_form)[..] {
 		    "する" => { "して".to_string() },
 		    "来る" => { "来て".to_string() },
-		    _ => { unreachable!("Surely there are only two irregular verbs") }
+		    _ => {
+			let length = self.dictionary_form.chars().count();
+			let without_suru: String = self.dictionary_form.chars().take(length - 2).collect();
+			format!("{}{}", without_suru, "して")
+		    }
 		}
 	    },
 	    VerbType::Ru => { format!("{}{}", &self.stem(), "て") },
@@ -160,7 +164,12 @@ impl Verb {
 		let last_character = &self.dictionary_form.chars().last().unwrap();
 		let replacement = match last_character {
 		    'む'|'ぶ'|'ぬ' => { "んで" },
-		    'く' => { "いて" },
+		    'く' => {
+			match &(self.dictionary_form)[..] {
+			    "行く" => { "って" },
+			    _ => { "いて" },
+			}
+		    },
 		    'ぐ' => { "いで" },
 		    'す' => { "して" },
 		    _ => { "って" },
@@ -182,6 +191,7 @@ fn main() {
 	Verb::new("食べる","たべる",VerbType::Ru),
 	Verb::new("合う","あう",VerbType::U),
 	Verb::new("働く","はたらく",VerbType::U),
+	Verb::new("行く","いく",VerbType::U),
 	Verb::new("急ぐ","いそぐ",VerbType::U),
 	Verb::new("話す","はなく",VerbType::U),
 	Verb::new("持つ","もつ",VerbType::U),
@@ -191,6 +201,7 @@ fn main() {
 	Verb::new("見る","みる",VerbType::U),
 	Verb::new("する","する",VerbType::Irregular),
 	Verb::new("来る","来る",VerbType::Irregular),
+	Verb::new("勉強する","べんきょうする",VerbType::Irregular),
     ];
 
     verbs.iter().for_each(|v| { v.debug(); println!(""); } );
